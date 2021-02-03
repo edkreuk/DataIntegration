@@ -1,0 +1,181 @@
+{
+    "name": "PL_ACT_PAUSE_SQLPOOL",
+    "properties": {
+        "description": "Pipeline to Pause a Synapse Dedicated SQL Pool",
+        "activities": [
+            {
+                "name": "Until SQL POOL is Paused or Online",
+                "description": "Check every x second to see if status is changed. We can only change Status when  in Paused or Online mode",
+                "type": "Until",
+                "dependsOn": [],
+                "userProperties": [],
+                "typeProperties": {
+                    "expression": {
+                        "value": "@or(bool(startswith(activity('Check for changed SQLPool Status').Output.Properties.status,'Paused'))\n,Bool(startswith(activity('Check for changed SQLPool Status').Output.Properties.status,'Online')))",
+                        "type": "Expression"
+                    },
+                    "activities": [
+                        {
+                            "name": "Check for changed SQLPool Status",
+                            "description": "Check every x second to see if status is changed",
+                            "type": "WebActivity",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "7.00:00:00",
+                                "retry": 3,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "url": {
+                                    "value": "https://management.azure.com/subscriptions/@{pipeline().parameters.SubscriptionID}/resourceGroups/@{pipeline().parameters.Synapse_ResourceGroupName}/providers/Microsoft.Synapse/workspaces/@{pipeline().parameters.SynapseWorkspace}/sqlPools/@{pipeline().parameters.SynapseDedicatedSQLPool}/?api-version=2019-06-01-preview",
+                                    "type": "Expression"
+                                },
+                                "connectVia": {
+                                    "referenceName": "AutoResolveIntegrationRuntime",
+                                    "type": "IntegrationRuntimeReference"
+                                },
+                                "method": "GET",
+                                "body": {
+                                    "Dummy": "Dummy"
+                                },
+                                "authentication": {
+                                    "type": "MSI",
+                                    "resource": "https://management.azure.com/"
+                                }
+                            }
+                        },
+                        {
+                            "name": "Wait before checking again",
+                            "type": "Wait",
+                            "dependsOn": [
+                                {
+                                    "activity": "Check for changed SQLPool Status",
+                                    "dependencyConditions": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            ],
+                            "userProperties": [],
+                            "typeProperties": {
+                                "waitTimeInSeconds": {
+                                    "value": "@pipeline().parameters.WaitTimeUntil",
+                                    "type": "Expression"
+                                }
+                            }
+                        }
+                    ],
+                    "timeout": "0.00:20:00"
+                }
+            },
+            {
+                "name": "Check if SQL POOL is Paused",
+                "description": "When SQLPool is Paused do nothing",
+                "type": "IfCondition",
+                "dependsOn": [
+                    {
+                        "activity": "Until SQL POOL is Paused or Online",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "expression": {
+                        "value": "@bool(startswith(activity('Check for changed SQLPool Status').Output.Properties.status,'Paused'))",
+                        "type": "Expression"
+                    },
+                    "ifFalseActivities": [
+                        {
+                            "name": "Pause SQLPOOL",
+                            "type": "WebActivity",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "7.00:00:00",
+                                "retry": 0,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": true
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "url": {
+                                    "value": "https://management.azure.com/subscriptions/{pipeline().parameters.SubscriptionID}/resourceGroups/{pipeline().parameters.Synapse_ResourceGroupName}/providers/Microsoft.Synapse/workspaces/{pipeline().parameters.SynapseWorkspace}/sqlPools/{pipeline().parameters.SynapseDedicatedSQLPool}/@{pipeline().parameters.Action}?api-version=2019-06-01-preview",
+                                    "type": "Expression"
+                                },
+                                "connectVia": {
+                                    "referenceName": "AutoResolveIntegrationRuntime",
+                                    "type": "IntegrationRuntimeReference"
+                                },
+                                "method": "POST",
+                                "body": {
+                                    "Nothing": "Nothing"
+                                },
+                                "authentication": {
+                                    "type": "MSI",
+                                    "resource": "https://management.azure.com/"
+                                }
+                            }
+                        },
+                        {
+                            "name": "Wait before Continue",
+                            "type": "Wait",
+                            "dependsOn": [
+                                {
+                                    "activity": "Pause SQLPOOL",
+                                    "dependencyConditions": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            ],
+                            "userProperties": [],
+                            "typeProperties": {
+                                "waitTimeInSeconds": {
+                                    "value": "@pipeline().parameters.WaitTime",
+                                    "type": "Expression"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "Action": {
+                "type": "string",
+                "defaultValue": "Pause"
+            },
+            "WaitTime": {
+                "type": "int",
+                "defaultValue": 10
+            },
+            "WaitTimeUntil": {
+                "type": "int",
+                "defaultValue": 30
+            },
+            "Synapse_ResourceGroupName": {
+                "type": "string",
+                "defaultValue": "XXXXXXXXXXXX"
+            },
+            "SynapseWorkspace": {
+                "type": "string",
+                "defaultValue": "SYNAPSEWORKSPACE"
+            },
+            "SynapseDedicatedSQLPool": {
+                "type": "string",
+                "defaultValue": "dwh"
+            },
+            "SubscriptionId": {
+                "type": "string",
+                "defaultValue": "xxxxx"
+            }
+        },
+        "folder": {
+            "name": "SQLPOOL/SQL POOL Pause"
+        },
+        "annotations": []
+    }
+}
