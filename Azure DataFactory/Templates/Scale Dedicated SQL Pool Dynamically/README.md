@@ -11,13 +11,9 @@ This article describes a solution template how you can Scale up or down a SQL Po
 	- **Web Activity** Activity to Resume the SQL Pool if not Online
 	- **Wait Activity** Activty to wait before to go to the next activity
 - **Web Activity** Activity to Scale the SQL Pool up or down to the desired Performance Level
-Parameters
-
-Action:   RESUME
 
 
-
-**Supported keys** in pagination rules:
+**Pipeline Parameters:**
 
 | Parameter | Value | Deceription | 
 |:--- |:--- |:--- |
@@ -35,8 +31,10 @@ Action:   RESUME
 After you imported the Template you will see the following:
 
 ![Template](../images/Synapse-SQL-Pool-Scale.jpg)
+# Until SQL POOL is Paused or Online
+
 **Until Activity**
-We can only change the PerformanceLevel when the SQL Pool is Paused or Online That’s why we need to add an Until activity to check for these statusses 
+We can only change the PerformanceLevel when the SQL Pool is Paused or Online. That’s why we need to add an Until activity to check for these statusses 
 
 **Web Activity**
 Within the Until Activity we need to create a new Web Activity.
@@ -47,7 +45,7 @@ Name = Check for changed SQLPool Status
 
 URL= https://management.azure.com/subscriptions/XXX/resourceGroups/XXX/providers/Microsoft.Synapse/workspaces/XXX/sqlPools/XXX/?api-version=2019-06-01-preview
 
-The  <xxx> we need to replace with the Pipeline Parameters. The final Result will be:
+The  **XXX** we need to replace with the Pipeline Parameters.
 
 https://management.azure.com/subscriptions/@{pipeline().parameters.SubscriptionID}/resourceGroups/@{pipeline().parameters.Synapse_ResourceGroupName}/providers/Microsoft.Synapse/workspaces/@{pipeline().parameters.SynapseWorkspace}/sqlPools/@{pipeline().parameters.SynapseDedicatedSQLPool}/?api-version=2019-06-01-preview
 
@@ -80,7 +78,7 @@ Expression: **@bool(startswith(activity('Check for changed SQLPool Status').Outp
 **Web Activity** In case the SQL Pool is **Paused** we need to **Resume**
 URL: https://management.azure.com/subscriptions/XXX/resourceGroups/XXX/providers/Microsoft.Synapse/workspaces/XXX/sqlPools/XXX/{Action}?api-version=2019-06-01-preview
 
-The  <xxx> we need to replace with the Pipeline Parameters. The final Result will be:
+The  **XXX** we need to replace with the Pipeline Parameters. The final Result will be:
 
 https://management.azure.com/subscriptions/{pipeline().parameters.SubscriptionID}/resourceGroups/{pipeline().parameters.Synapse_ResourceGroupName}/providers/Microsoft.Synapse/workspaces/{pipeline().parameters.SynapseWorkspace}/sqlPools/{pipeline().parameters.SynapseDedicatedSQLPool}/@{pipeline().parameters.Action}?api-version=2019-06-01-preview
 
@@ -96,6 +94,8 @@ Resource =https://management.azure.com/
 
 Expression: **@pipeline().parameters.WaitTime**
 
+# SCALE SQL POOL
+
 **Web Activity**  "Scale SQL Pool"
 
 ![Until Activity](../images/Synapse-SQL-Pool-Scale-Header.jpg)
@@ -105,8 +105,7 @@ Name = SCALE SQLPOOL
 
 URL= https://management.azure.com/subscriptions/XXX/resourceGroups/XXX/providers/Microsoft.Synapse/workspaces/XXX/sqlPools/XXX/?api-version=2019-06-01-preview
 
-The  <xxx> we need to replace with the Pipeline Parameters. The final Result will be:
-
+The  **XXX** we need to replace with the Pipeline Parameters.
 https://management.azure.com/subscriptions/@{pipeline().parameters.SubscriptionID}/resourceGroups/@{pipeline().parameters.Synapse_ResourceGroupName}/providers/Microsoft.Synapse/workspaces/@{pipeline().parameters.SynapseWorkspace}/sqlPools/@{pipeline().parameters.SynapseDedicatedSQLPool}/?api-version=2019-06-01-preview
 
 Method = PATCH
@@ -116,3 +115,12 @@ Headers =  Name = Content-Type     Value= application/json
 Body = { “sku”: { “name”: ‘@{pipeline().parameters.PerformanceLevel}’ } }
 
 Resource =https://management.azure.com/
+
+# Important 
+To allow Azure Data Factory to call the REST API we need to give the Azure Data Factory access to the SQL Pool. In the Access control (IAM) of the SQL Pool assign the contributor role to Azure Data Factory.
+
+
+Select **Debug**, enter the **Parameters**, and then select **Finish**.
+![Until Activity](../images/ADF-scale-pool.jpg)
+When the pipeline run completes successfully, you would see the result similar to the following example:
+![Until Activity](../images/ADF-scale-pool.jpg)

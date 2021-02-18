@@ -33,10 +33,6 @@
                                     "value": "https://management.azure.com/subscriptions/@{pipeline().parameters.SubscriptionID}/resourceGroups/@{pipeline().parameters.Synapse_ResourceGroupName}/providers/Microsoft.Synapse/workspaces/@{pipeline().parameters.SynapseWorkspace}/sqlPools/@{pipeline().parameters.SynapseDedicatedSQLPool}/?api-version=2019-06-01-preview",
                                     "type": "Expression"
                                 },
-                                "connectVia": {
-                                    "referenceName": "AutoResolveIntegrationRuntime",
-                                    "type": "IntegrationRuntimeReference"
-                                },
                                 "method": "GET",
                                 "body": {
                                     "Dummy": "Dummy"
@@ -106,10 +102,6 @@
                                     "value": "https://management.azure.com/subscriptions/@{pipeline().parameters.SubscriptionID}/resourceGroups/@{pipeline().parameters.Synapse_ResourceGroupName}/providers/Microsoft.Synapse/workspaces/@{pipeline().parameters.SynapseWorkspace}/sqlPools/@{pipeline().parameters.SynapseDedicatedSQLPool}/@{pipeline().parameters.Action}?api-version=2019-06-01-preview",
                                     "type": "Expression"
                                 },
-                                "connectVia": {
-                                    "referenceName": "AutoResolveIntegrationRuntime",
-                                    "type": "IntegrationRuntimeReference"
-                                },
                                 "method": "POST",
                                 "body": {
                                     "Nothing": "Nothing"
@@ -143,7 +135,7 @@
                 }
             },
             {
-                "name": "SCALE SQLPOOL",
+                "name": "SCALE SQL POOL",
                 "type": "WebActivity",
                 "dependsOn": [
                     {
@@ -165,10 +157,6 @@
                     "url": {
                         "value": "https://management.azure.com/subscriptions/@{pipeline().parameters.SubscriptionID}/resourceGroups/@{pipeline().parameters.Synapse_ResourceGroupName}/providers/Microsoft.Synapse/workspaces/@{pipeline().parameters.SynapseWorkspace}/sqlPools/@{pipeline().parameters.SynapseDedicatedSQLPool}/?api-version=2019-06-01-preview",
                         "type": "Expression"
-                    },
-                    "connectVia": {
-                        "referenceName": "AutoResolveIntegrationRuntime",
-                        "type": "IntegrationRuntimeReference"
                     },
                     "method": "PATCH",
                     "headers": {
@@ -200,11 +188,11 @@
             },
             "Synapse_ResourceGroupName": {
                 "type": "string",
-                "defaultValue": "XXXXXXXXXXXX"
+                "defaultValue": "xxxxxxxxx"
             },
             "SynapseWorkspace": {
                 "type": "string",
-                "defaultValue": "SYNAPSEWORKSPACE"
+                "defaultValue": "xxxxxxx"
             },
             "SynapseDedicatedSQLPool": {
                 "type": "string",
@@ -212,16 +200,17 @@
             },
             "SubscriptionId": {
                 "type": "string",
-                "defaultValue": "xxxxx"
+                "defaultValue": "xxxxxxx"
             },
             "PerformanceLevel": {
                 "type": "string",
-                "defaultValue": "DW500c"
+                "defaultValue": "DW100c"
             }
         },
         "folder": {
             "name": "SQLPOOL/SQL POOL Scale"
         },
-        "annotations": []
+        "annotations": [],
+        "lastPublishTime": "2021-02-17T17:59:48Z"
     }
 }

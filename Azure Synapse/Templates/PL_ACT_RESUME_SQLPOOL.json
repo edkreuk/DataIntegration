@@ -33,10 +33,6 @@
                                     "value": "https://management.azure.com/subscriptions/@{pipeline().parameters.SubscriptionID}/resourceGroups/@{pipeline().parameters.Synapse_ResourceGroupName}/providers/Microsoft.Synapse/workspaces/@{pipeline().parameters.SynapseWorkspace}/sqlPools/@{pipeline().parameters.SynapseDedicatedSQLPool}/?api-version=2019-06-01-preview",
                                     "type": "Expression"
                                 },
-                                "connectVia": {
-                                    "referenceName": "AutoResolveIntegrationRuntime",
-                                    "type": "IntegrationRuntimeReference"
-                                },
                                 "method": "GET",
                                 "body": {
                                     "Dummy": "Dummy"
@@ -72,7 +68,7 @@
             },
             {
                 "name": "Check if SQL POOL is Paused",
-                "description": "When SQLPool is Paused do nothing",
+                "description": "When SQLPool is Online do nothing else Resume",
                 "type": "IfCondition",
                 "dependsOn": [
                     {
@@ -103,12 +99,8 @@
                             "userProperties": [],
                             "typeProperties": {
                                 "url": {
-                                    "value": "https://management.azure.com/subscriptions/{pipeline().parameters.SubscriptionID}/resourceGroups/{pipeline().parameters.Synapse_ResourceGroupName}/providers/Microsoft.Synapse/workspaces/{pipeline().parameters.SynapseWorkspace}/sqlPools/{pipeline().parameters.SynapseDedicatedSQLPool}/@{pipeline().parameters.Action}?api-version=2019-06-01-preview",
+                                    "value": "https://management.azure.com/subscriptions/@{pipeline().parameters.SubscriptionID}/resourceGroups/@{pipeline().parameters.Synapse_ResourceGroupName}/providers/Microsoft.Synapse/workspaces/@{pipeline().parameters.SynapseWorkspace}/sqlPools/@{pipeline().parameters.SynapseDedicatedSQLPool}/@{pipeline().parameters.Action}?api-version=2019-06-01-preview",
                                     "type": "Expression"
-                                },
-                                "connectVia": {
-                                    "referenceName": "AutoResolveIntegrationRuntime",
-                                    "type": "IntegrationRuntimeReference"
                                 },
                                 "method": "POST",
                                 "body": {
@@ -146,7 +138,7 @@
         "parameters": {
             "Action": {
                 "type": "string",
-                "defaultValue": "Pause"
+                "defaultValue": "Resume"
             },
             "WaitTime": {
                 "type": "int",
@@ -158,11 +150,11 @@
             },
             "Synapse_ResourceGroupName": {
                 "type": "string",
-                "defaultValue": "XXXXXXXXXXXX"
+                "defaultValue": "xxxxxxx"
             },
             "SynapseWorkspace": {
                 "type": "string",
-                "defaultValue": "SYNAPSEWORKSPACE"
+                "defaultValue": "xxxxx"
             },
             "SynapseDedicatedSQLPool": {
                 "type": "string",
