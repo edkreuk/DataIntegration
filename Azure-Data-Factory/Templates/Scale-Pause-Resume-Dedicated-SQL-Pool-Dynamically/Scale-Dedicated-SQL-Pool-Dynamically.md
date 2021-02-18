@@ -128,4 +128,4 @@ When the pipeline run completes successfully, you would see the result similar t
 
 
 A SQL Pool(Former SQL DW)
-- [A SQL Pool(Former SQL DW)](Settings-Dedicated-SQL-Pool-Former-SQLDW.md) 
+- [Settings for a SQL Pool(Former SQL DW)](Settings-Dedicated-SQL-Pool-Former-SQLDW.md) 
