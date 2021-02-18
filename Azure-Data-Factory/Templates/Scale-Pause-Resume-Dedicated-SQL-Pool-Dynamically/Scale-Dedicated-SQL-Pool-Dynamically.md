@@ -1,6 +1,6 @@
 # Scale Dedicated SQL Pool Dynamically
 
-Use this template to scale up and down a Dedicated SQL Pool in Azure Synapse Analytics. This pipelines is designed to Scale a SQL Pool within Azure Synapse Analytics. A SQL Pool(Former Azure SQL DW) linked to a SQL (Logical) Server has a slightly different approach. Please check the documentation
+Use this template to scale up and down a Dedicated SQL Pool in Azure Synapse Analytics. This pipelines is designed to Scale a SQL Pool within Azure Synapse Analytics. A SQL Pool(Former Azure SQL DW) linked to a SQL (Logical) Server has a slightly different approach. 
 This article describes a solution template how you can Scale up or down a SQL Pool within Azure Synapse Analytics. This is actually a necessary functionality during your Data Movement Solutions. In this way you can optimize costs.
 
 ## The template contains 7 activities
@@ -125,3 +125,7 @@ Select **Debug**, enter the **Parameters**, and then select **Finish**.
 ![Parameters](../images/ADF-pipeline-run.jpg)
 When the pipeline run completes successfully, you would see the result similar to the following example:
 ![Debug](../images/ADF-scale-pool.jpg)
+
+
+A SQL Pool(Former SQL DW)
+- [A SQL Pool(Former SQL DW)](Settings-Dedicated-SQL-Pool-Former-SQLDW.md) 
