@@ -20,7 +20,7 @@ Import the Template
 Configure configuration].[Source_Parameter] table, with the required fields.
 
 
-![Source Parameters](../../../images/Source_Parameters.jpg)
+![Source Parameters](../../images/Source_Parameters.jpg)
 
 
 
