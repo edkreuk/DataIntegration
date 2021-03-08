@@ -30,7 +30,7 @@ This article describes a solution template how you can Scale up or down a SQL Po
 
 After you imported the Template you will see the following:
 
-![Template](../../images/Synapse-SQL-Pool-Scale.jpg)
+![Template](../../../images/Synapse-SQL-Pool-Scale.jpg)
 # Until SQL POOL is Paused or Online
 
 **Until Activity**
@@ -39,7 +39,7 @@ We can only change the PerformanceLevel when the SQL Pool is Paused or Online. T
 **Web Activity**
 Within the Until Activity we need to create a new Web Activity.
 
-![Web Activity](../../images/Web-Activity.jpg)
+![Web Activity](../../../images/Web-Activity.jpg)
 
 Name = Check for changed SQLPool Status
 
@@ -55,7 +55,7 @@ Resource =https://management.azure.com/
 
 After we have created the Web Activity, we can define the expression for the Until Activity.
 
-![Until Activity](../../images/Until-expression.jpg)
+![Until Activity](../../../images/Until-expression.jpg)
 
 The Pipeline can only continue when the status is Paused or Online and not one of the other statuses. That’s the reason we need to add these 2 two statuses to check for.
 
@@ -68,7 +68,7 @@ The Until Activity will only continue, when the status from the above Web Activi
 **Wait Activity**
 
 A Wait Activity waits for the specified period of time before continuing with execution of subsequent activities.
-![Until Activity](../../images/Wait-expression.jpg)
+![Until Activity](../../../images/Wait-expression.jpg)
 
 # Check for the SQL Pool Status
 **If Condition Activity** (Name: Check if SQL POOL is Paused). When is SQL Pool is  **Paused**, we need to **Resume**
@@ -98,7 +98,7 @@ Expression: **@pipeline().parameters.WaitTime**
 
 **Web Activity**  "Scale SQL Pool"
 
-![Until Activity](../../images/Synapse-SQL-Pool-Scale-Header.jpg)
+![Until Activity](../../../images/Synapse-SQL-Pool-Scale-Header.jpg)
 
 
 Name = SCALE SQL POOL
@@ -118,13 +118,13 @@ Resource =https://management.azure.com/
 
 # Important 
 To allow Azure Data Factory to call the REST API we need to give the Azure Data Factory access to the SQL Pool. In the Access control (IAM) of the SQL Pool assign the contributor role to Azure Data Factory.
-![Access Control](../../images/SQL-Pool-IAM.jpg)
+![Access Control](../../../images/SQL-Pool-IAM.jpg)
 
 ## Debug
 Select **Debug**, enter the **Parameters**, and then select **Finish**.
-![Parameters](../../images/ADF-pipeline-run.jpg)
+![Parameters](../../../images/ADF-pipeline-run.jpg)
 When the pipeline run completes successfully, you would see the result similar to the following example:
-![Debug](../../images/ADF-scale-pool.jpg)
+![Debug](../../../images/ADF-scale-pool.jpg)
 
 
 A SQL Pool(Former SQL DW)
