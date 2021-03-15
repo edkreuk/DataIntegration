@@ -129,3 +129,7 @@ When the pipeline run completes successfully, you would see the result similar t
 
 A SQL Pool(Former SQL DW)
 - [Settings for a SQL Pool(Former SQL DW)](Settings-Dedicated-SQL-Pool-Former-SQLDW.md) 
+
+
+## Video Tutorial:
+[![Scale Dedicated SQL Pool Dynamically](../../../images/SQL-Pool.png)](https://youtu.be/TAbOqOyfGBk "Scale Dedicated SQL Pool Dynamically")
