@@ -89,10 +89,10 @@ CREATE PROCEDURE [configuration].[Environment]
     END
 ```
 After you have imported the Template you will see the following:
+
 ![Template](../../../images/Template-Scale-SQL-Database.jpg)
 
 Create a connection to the database where your metadata tables is stored. Followed by **use this template.**
-## Until Check Database
 
 **Lookup Activity**
 Name = Get SQL Server Name
@@ -110,9 +110,12 @@ ColumnToPivot= ParameterName
 ListToPivot= [ResourceGroupName],[SubscriptionId],[SQLServer]
 
 ![Preview](../../../images/SQL-Database-lookup-preview.jpg)
+## Until Check DatabaseStatus
+
+
 
 **Until Activity**
-We can only change the DatabaseLevel when the SQL Database is Paused or Online. That’s why we need to add an Until activity to check for these statusses 
+We can only change the DatabaseLevel when the SQL Database is Paused or Online. That’s why we need to add an Until activity to check for these statusses.
 
 **Web Activity**
 Within the Until Activity we need to create a new Web Activity.
@@ -135,7 +138,7 @@ After we have created the Web Activity, we can define the expression for the Unt
 
 ![Until Activity](../../../images/Until-expression-SQL-Database.jpg)
 
-The Pipeline can only continue when the current status is not scaling. We can check this by comparing the currentServiceObjectiveName and the requestedServiceObjectiveName
+The Pipeline can only continue when the current status is not scaling. We can check this by comparing the currentServiceObjectiveName and the requestedServiceObjectiveName.
 
 Expression: **@equals(activity('Check for Database Status').Output.Properties.currentServiceObjectiveName,activity('Check for Database Status').Output.Properties.requestedServiceObjectiveName)**
 
@@ -160,7 +163,7 @@ The **XXX** are replaced with the output from Lookup activity.
 
 https://management.azure.com/subscriptions/@{activity('Get SQL Server Name').output.firstRow.SubscriptionId}/resourceGroups/@{activity('Get SQL Server Name').output.firstRow.ResourceGroupName}/providers/Microsoft.Sql/servers/@{activity('Get SQL Server Name').output.firstRow.SQLServer}/databases/@{activity('Get SQL Server Name').output.firstRow.DatabaseName}/Resume?api-version=2019-06-01-preview
 
-It is almost the same URL we used in the First Web Actvity but have to add the action option **Resume**
+It is almost the same URL we used in the First Web Actvity but have to add the action option **Resume**.
 
 Method = Post
 
@@ -207,5 +210,6 @@ When the pipeline run completes successfully, you will see the result similar to
 ![Debug](../../../images/SQL-Database-Run.jpg)
 
 
+You can now call this pipeline from every other pipeline, you only need to change the DatabaseLevel and DatabaseName.
 
-
+![Pipeline Activity](../../../SQL-Database-pipeline-activity.jpg)
