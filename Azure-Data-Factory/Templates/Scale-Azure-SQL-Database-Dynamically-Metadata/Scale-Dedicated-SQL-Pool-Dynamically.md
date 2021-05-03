@@ -212,4 +212,5 @@ When the pipeline run completes successfully, you will see the result similar to
 
 You can now call this pipeline from every other pipeline, you only need to change the DatabaseLevel and DatabaseName.
 
-![Pipeline Activity](../../../SQL-Database-pipeline-activity.jpg)
+![Pipeline Activity](../../../images/SQL-Database-pipeline-activity.jpg)
+
