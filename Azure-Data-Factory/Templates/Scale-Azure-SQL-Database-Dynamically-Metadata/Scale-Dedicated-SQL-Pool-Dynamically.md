@@ -22,47 +22,43 @@ This article describes a solution template how you can Scale up or down a SQL Da
 |WaitTime| 10| Wait time in seconds before the Pipeline will finish
 |WaitTimeUntil| 30| Wait time in seconds for the retry process
 |DatabaseLevel|S1|  The Database Service Objective Name https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases  https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases
-|DatabaseName|Datastore|  The Database Name 
+|DatabaseName|Datastore|  The Database Name| 
 
 
 # How to use this solution template
 
 Create a control table in Azure SQL Database to store the Metadata. 
+>[!NOTE]
+    > The table and stored procedure can be stored in any database, but preferred in a database where you store all your configuration 
 
-    > [!NOTE]
-    > The table can be stored in any database, but preferred in a database where you store all your configuration   
-
-
-    ```sql
-    CREATE TABLE [configuration].[Environment_Parameter1](
+```sql
+CREATE TABLE [configuration].[Environment_Parameter1](
 	[ParameterId] [int] IDENTITY(1,1) NOT NULL,
 	[ParameterName] [varchar](128) NOT NULL,
 	[ParameterValue] [nvarchar](max) NOT NULL,
 	[Description] [nvarchar](max) NULL,
 	
-     CONSTRAINT [PK_Environment_Parameter1] PRIMARY KEY CLUSTERED 
+CONSTRAINT [PK_Environment_Parameter1] PRIMARY KEY CLUSTERED 
     (
     	[ParameterId] ASC
     )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
     ) ON [PRIMARY]
     
-    INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'yourResourceGroupName', N'', N'ResourceGroupName of your Azure Synapse or ADF Instance')
-    GO
-    INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'SubscriptionId', N'XXXXXXXX', N'SubscriptionId of your Azure Synapse or ADF Instance')
-    go
-    INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'SQLServer', N'yoursqlserver', N'Name of your SQL Server( Needed for scaling databases)')
-    GO
-     ```
+INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'yourResourceGroupName', N'', N'ResourceGroupName of your Azure Synapse or ADF Instance')
+GO
+INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'SubscriptionId', N'XXXXXXXX', N'SubscriptionId of your Azure Synapse or ADF Instance')
+GO
+INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'SQLServer', N'yoursqlserver', N'Name of your SQL Server( Needed for scaling databases)')
+GO
+```
 
 
-    ```sql
-    	create PROCEDURE [configuration].[Environment]
-      
-      @ColumnToPivot  NVARCHAR(255),
-      @ListToPivot    NVARCHAR(max)
+```sql
+CREATE PROCEDURE [configuration].[Environment]
+    @ColumnToPivot  NVARCHAR(255),
+    @ListToPivot    NVARCHAR(max)
     AS
-    
-    /**********************************************************************************************************
+      /**********************************************************************************************************
     * SP Name:		[configuration].[[Environment]]
     *  
     * Purpose:		Procedure display record parameters for environment Settings
@@ -91,7 +87,7 @@ Create a control table in Azure SQL Database to store the Metadata.
       EXEC(@SqlStatement)
      
     END
-	```
+```
 After you have imported the Template you will see the following:
 ![Template](../../../images/Template-Scale-SQL-Database.jpg)
 
