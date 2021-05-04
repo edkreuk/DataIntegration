@@ -89,6 +89,8 @@ CREATE PROCEDURE [configuration].[Environment]
     END
 ```
 After you have imported the Template you will see the following:
+>[!NOTE]
+    > Azure Synapse has no import functionality, create a new pipeline **PL_ACT_SCALE_SQLDATABASE** and copy the code into the pipeline. Once the pipeline is created manualy link the correct linked service for your Metadata table
 
 ![Template](../../../images/Template-Scale-SQL-Database.jpg)
 

@@ -29,6 +29,8 @@ This article describes a solution template how you can Scale up or down a SQL Po
 ### How to use this solution template
 
 After you imported the Template you will see the following:
+>[!NOTE]
+    > Azure Synapse has no import functionality, create a new pipeline **PL_ACT_XXXXX_SQLPOOL** and copy the code into the pipeline. 
 
 ![Template](../../../images/Synapse-SQL-Pool-Scale.jpg)
 # Until SQL POOL is Paused or Online

@@ -1,0 +1,239 @@
+{
+    "name": "PL_ACT_SCALE_SQLDATABASE",
+    "properties": {
+        "description": "Pipeline to SCALE a SQL Database\nhttps://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases\n\nGP_S_Gen5_X (Number of Vcores)\nGP_Gen4_X (Number of Vcores)\nGP_Gen5_X (Number of Vcores)\n\nhttps://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases\nSX\nBX\nPX\n",
+        "activities": [
+            {
+                "name": "Check Databasestatus",
+                "description": "Check every x second to see if status is changed. We can only change Status when  in Paused or Online mode",
+                "type": "Until",
+                "dependsOn": [
+                    {
+                        "activity": "Get SQL Server Name",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "expression": {
+                        "value": "@equals(activity('Check for Database Status').Output.Properties.currentServiceObjectiveName,activity('Check for Database Status').Output.Properties.requestedServiceObjectiveName)",
+                        "type": "Expression"
+                    },
+                    "activities": [
+                        {
+                            "name": "Check for Database Status",
+                            "description": "Check every x second to see if status is changed",
+                            "type": "WebActivity",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "7.00:00:00",
+                                "retry": 3,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "url": {
+                                    "value": "https://management.azure.com/subscriptions/@{activity('Get SQL Server Name').output.firstRow.SubscriptionId}/resourceGroups/@{activity('Get SQL Server Name').output.firstRow.ResourceGroupName}/providers/Microsoft.Sql/servers/@{activity('Get SQL Server Name').output.firstRow.SQLServer}/databases/@{pipeline().parameters.DatabaseName}/?api-version=2019-06-01-preview",
+                                    "type": "Expression"
+                                },
+                                "method": "GET",
+                                "body": {
+                                    "Dummy": "Dummy"
+                                },
+                                "authentication": {
+                                    "type": "MSI",
+                                    "resource": "https://management.azure.com/"
+                                }
+                            }
+                        },
+                        {
+                            "name": "Wait before checking again",
+                            "type": "Wait",
+                            "dependsOn": [
+                                {
+                                    "activity": "Check for Database Status",
+                                    "dependencyConditions": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            ],
+                            "userProperties": [],
+                            "typeProperties": {
+                                "waitTimeInSeconds": {
+                                    "value": "@pipeline().parameters.WaitTimeUntil",
+                                    "type": "Expression"
+                                }
+                            }
+                        }
+                    ],
+                    "timeout": "0.00:20:00"
+                }
+            },
+            {
+                "name": "Get SQL Server Name",
+                "type": "Lookup",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 2,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "AzureSqlSource",
+                        "sqlReaderStoredProcedureName": "[configuration].[Environment]",
+                        "storedProcedureParameters": {
+                            "ColumnToPivot": {
+                                "type": "String",
+                                "value": "ParameterName"
+                            },
+                            "ListToPivot": {
+                                "type": "String",
+                                "value": "      [ResourceGroupName]\n\t  ,SubscriptionId\n,SQLServer"
+                            }
+                        },
+                        "queryTimeout": "02:00:00",
+                        "partitionOption": "None"
+                    },
+                    "firstRowOnly": true
+                }
+            },
+            {
+                "name": "SCALE SQL Database",
+                "type": "WebActivity",
+                "dependsOn": [
+                    {
+                        "activity": "Check if Database is Paused",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "url": {
+                        "value": "https://management.azure.com/subscriptions/@{activity('Get SQL Server Name').output.firstRow.SubscriptionId}/resourceGroups/@{activity('Get SQL Server Name').output.firstRow.ResourceGroupName}/providers/Microsoft.Sql/servers/@{activity('Get SQL Server Name').output.firstRow.SQLServer}/databases/@{pipeline().parameters.DatabaseName}/?api-version=2019-06-01-preview",
+                        "type": "Expression"
+                    },
+                    "method": "PATCH",
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "body": {
+                        "value": "{ \n \"sku\": { \n    \"name\": '@{pipeline().parameters.PerformanceLevel}' \n  } \n}\n",
+                        "type": "Expression"
+                    },
+                    "authentication": {
+                        "type": "MSI",
+                        "resource": "https://management.azure.com/"
+                    }
+                }
+            },
+            {
+                "name": "Check if Database is Paused",
+                "description": "When Database is Paused do nothing else bring online",
+                "type": "IfCondition",
+                "dependsOn": [
+                    {
+                        "activity": "Check Databasestatus",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "expression": {
+                        "value": "@bool(startswith(activity('Check for Database Status').Output.Properties.status,'Paused'))",
+                        "type": "Expression"
+                    },
+                    "ifTrueActivities": [
+                        {
+                            "name": "Resume SQLDatabase",
+                            "type": "WebActivity",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "7.00:00:00",
+                                "retry": 0,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": true
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "url": {
+                                    "value": "https://management.azure.com/subscriptions/@{activity('Get SQL Server Name').output.firstRow.SubscriptionId}/resourceGroups/@{activity('Get SQL Server Name').output.firstRow.ResourceGroupName}/providers/Microsoft.Sql/servers/@{activity('Get SQL Server Name').output.firstRow.SQLServer}/databases/@{activity('Get SQL Server Name').output.firstRow.DatabaseName}/Resume?api-version=2019-06-01-preview",
+                                    "type": "Expression"
+                                },
+                                "method": "POST",
+                                "body": {
+                                    "Nothing": "Nothing"
+                                },
+                                "authentication": {
+                                    "type": "MSI",
+                                    "resource": "https://management.azure.com/"
+                                }
+                            }
+                        },
+                        {
+                            "name": "Wait before Continue",
+                            "type": "Wait",
+                            "dependsOn": [
+                                {
+                                    "activity": "Resume SQLDatabase",
+                                    "dependencyConditions": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            ],
+                            "userProperties": [],
+                            "typeProperties": {
+                                "waitTimeInSeconds": {
+                                    "value": "@pipeline().parameters.WaitTime",
+                                    "type": "Expression"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WaitTime": {
+                "type": "int",
+                "defaultValue": 10
+            },
+            "WaitTimeUntil": {
+                "type": "int",
+                "defaultValue": 30
+            },
+            "PerformanceLevel": {
+                "type": "string",
+                "defaultValue": "S1"
+            },
+            "DatabaseName": {
+                "type": "string",
+                "defaultValue": "DataStore"
+            }
+        },
+        "folder": {
+            "name": "Nitrogen/Automation/SQLDatabase"
+        },
+        "annotations": [],
+        "lastPublishTime": "2021-02-14T12:34:10Z"
+    }
+}
