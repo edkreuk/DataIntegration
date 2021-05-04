@@ -17,7 +17,7 @@ This article describes a solution template how you can Scale up or down a SQL Da
 
 **Pipeline Parameters:**
 
-| Parameter | Value | Deceription | 
+| Parameter | Value | Description | 
 |:--- |:--- |:--- |
 |WaitTime| 10| Wait time in seconds before the Pipeline will finish
 |WaitTimeUntil| 30| Wait time in seconds for the retry process
