@@ -5,13 +5,13 @@ Use this template to scale up and down an Azure SQL Database in Azure Synapse An
 This article describes a solution template how you can Scale up or down a SQL Database within Azure Synapse Analytics or Azure Data Factory based on metadata. This is actually a necessary functionality during your Data Movement Solutions. In this way you can optimize costs and gain more performance during batch loading.
 
 ## The template contains 8 activities
-- **Lookup Activity** Get the necassary metadata from a table in your configuration database.
+- **Lookup Activity** Get the necessary metadata from a table in your configuration database.
 - **Until Activity** to check a set of activities in a loop until the condition associated with the activity evaluates to true.
 	- **Web Activity**  activity which will check the current Status of the SQL Pool
 	- **Wait Activity** activity which will wait before retry to check the Status of the SQL Database
 - **If Condition Activity** Activity to check if the SQL Database is Online
 	- **Web Activity** Activity to Resume the SQL Database(Serverless only) if not Online
-	- **Wait Activity** Activty to wait before to go to the next activity
+	- **Wait Activity** Activity to wait before to go to the next activity
 - **Web Activity** Activity to Scale the SQL Database up or down to the desired DatabaseLevel
 
 
@@ -89,8 +89,6 @@ CREATE PROCEDURE [configuration].[Environment]
     END
 ```
 After you have imported the Template you will see the following:
->[!NOTE]
-    > Azure Synapse has no import functionality, create a new pipeline **PL_ACT_SCALE_SQLDATABASE** and copy the code into the pipeline. Once the pipeline is created manualy link the correct linked service for your Metadata table
 
 ![Template](../../../images/Template-Scale-SQL-Database.jpg)
 
@@ -156,9 +154,9 @@ A Wait Activity waits for the specified period of time before continuing with ex
 # Check for the SQL Database Status (Serverless Only)
 **If Condition Activity** (Name: Check if Database is Paused). When is SQL Database is  **Paused**, we need to **Resume**
 
-Expression: **@bool(startswith(activity('Check for changed SQLPool Status').Output.Properties.status,'Paused'))**
+Expression: **@bool(startswith(activity('Check for Database Status').Output.Properties.status,'Paused'))**
 
-**Web Activity** In case the SQL Pool is **Paused** we need to **Resume**
+**Web Activity** In case the SQL Database is **Paused** we need to **Resume**
 URL: https://management.azure.com/subscriptions/XXX/resourceGroups/XXX/providers/Microsoft.Sql/servers/XXX/databases/XXX/{Action}?api-version=2019-06-01-preview
 
 The **XXX** are replaced with the output from Lookup activity.

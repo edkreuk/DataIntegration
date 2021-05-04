@@ -15,7 +15,7 @@ This article describes a solution template how you can Scale up or down a SQL Po
 
 **Pipeline Parameters:**
 
-| Parameter | Value | Deceription | 
+| Parameter | Value | Description | 
 |:--- |:--- |:--- |
 |Action|   RESUME | Value needs to be **RESUME** to Scale
 |WaitTime| 10| Wait time in seconds before the Pipeline will finish
