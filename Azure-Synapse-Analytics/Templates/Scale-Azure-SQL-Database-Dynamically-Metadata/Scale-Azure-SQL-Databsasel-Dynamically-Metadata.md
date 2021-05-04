@@ -1,4 +1,4 @@
-# Scale Dedicated SQL Pool Dynamically
+# Scale SQL Database Dynamically with Metadata
 
 Use this template to scale up and down an Azure SQL Database in Azure Synapse Analytics or in Azure Data Factory. 
 
