@@ -1,2 +1,2 @@
-# Azure Synpase Analytics
+# Azure Synapse Analytics
 File can be imported a Template
