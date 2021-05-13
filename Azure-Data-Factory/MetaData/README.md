@@ -1,9 +1,10 @@
-# AzureDataFactory  Metadata  and Parameters
+# AzureDataFactory or Azure Synapse Analytics Metadata  and Parameters
 
 Required Azure Data Services
 
 Azure SQL Server
 Azure Data Factory
+Azure Synapse Analytics
 Azure Data Lake Gen 2
 
 Deploy the DacPac to Azure SQL Server
