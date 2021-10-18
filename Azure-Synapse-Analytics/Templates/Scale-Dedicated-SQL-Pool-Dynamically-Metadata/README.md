@@ -43,7 +43,7 @@ CONSTRAINT [PK_Environment_Parameter1] PRIMARY KEY CLUSTERED
     ) ON [PRIMARY]
     
 INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'SubscriptionId', N'XXXXXXXX', N'SubscriptionId of your Azure Synapse Workspace')
-INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'yourResourceGroupName', N'', N'ResourceGroupName of your Azure Synapse ')
+INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'ResourceGroupName', N'yourResourceGroupName', N'ResourceGroupName of your Azure Synapse ')
 GO
 
 INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'SynapseDedicatedSQLPool', N'DWH', N'Name of the Dedicated SQL Pool in Synapse')
