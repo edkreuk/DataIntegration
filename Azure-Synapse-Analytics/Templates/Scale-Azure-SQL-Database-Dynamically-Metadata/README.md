@@ -19,10 +19,10 @@ This article describes a solution template how you can Scale up or down a SQL Da
 
 | Parameter | Value | Description | 
 |:--- |:--- |:--- |
-|Action|   RESUME | Value needs to be **RESUME** to Scale
 |WaitTime| 10| Wait time in seconds before the Pipeline will finish
-|WaitTimeUntil| 30| Wait time in seconds for the retry process|
-|PerformanceLevel|DW1000c|  The Database Performance level (DW100c, DW200c, DW300c, DW400c DW500c, DW1000c, DW1000c, DW1500c, DW2000c, DW2500c, DW3000c, DW5000c, DW6000c, DW7500c, DW10000c, DW15000c, DW30000c)|
+|WaitTimeUntil| 30| Wait time in seconds for the retry process
+|DatabaseLevel|S1|  The Database Service Objective Name https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases  https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases
+|DatabaseName|Datastore|  The Database Name| 
 
 
 # How to use this solution template
@@ -30,7 +30,6 @@ This article describes a solution template how you can Scale up or down a SQL Da
 Create a control table in Azure SQL Database to store the Metadata. 
 >[!NOTE]
     > The table and stored procedure can be stored in any database, but preferred in a database where you store all your configuration in.
-
 ```sql
 CREATE TABLE [configuration].[Environment_Parameter1](
 	[ParameterId] [int] IDENTITY(1,1) NOT NULL,
@@ -44,11 +43,11 @@ CONSTRAINT [PK_Environment_Parameter1] PRIMARY KEY CLUSTERED
     )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
     ) ON [PRIMARY]
     
-INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'SubscriptionId', N'XXXXXXXX', N'SubscriptionId of your Azure Synapse Workspace')
-INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'yourResourceGroupName', N'', N'ResourceGroupName of your Azure Synapse ')
+INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'yourResourceGroupName', N'', N'ResourceGroupName of your Azure Synapse or ADF Instance')
 GO
-
-INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'SynapseDedicatedSQLPool', N'DWH', N'Name of the Dedicated SQL Pool in Synapse')
+INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'SubscriptionId', N'XXXXXXXX', N'SubscriptionId of your Azure Synapse or ADF Instance')
+GO
+INSERT [configuration].[Environment_Parameter] ( [ParameterName], [ParameterValue], [Description]) VALUES (N'SQLServer', N'yoursqlserver', N'Name of your SQL Server( Needed for scaling databases)')
 GO
 ```
 
