@@ -1,2 +1,2 @@
 # Azure Synapse Analytics
-File can be imported a Template
+File can be imported as a Template
